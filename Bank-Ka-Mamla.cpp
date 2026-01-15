@@ -2,10 +2,11 @@
 #include <fstream>
 #include <stdlib.h>
 #include <time.h>
+#include <string> 
 using namespace std;
 
 class Bank {
-    int accNo;
+    string accNo;
     char name[25];
     char fatherName[25];
     char aadhar[25];
@@ -17,7 +18,7 @@ class Bank {
     fstream file, tempFile;
 
 public:
-    int searchAcc;
+    string searchAcc;
 
     void createAccount();
     void deposit();
@@ -25,11 +26,17 @@ public:
     void checkInfo();
 };
 
+void wait() {
+    cout << "\nPress Enter to continue...";
+    cin.ignore();
+    cin.get();
+}
+
 int main() {
     Bank obj;
-    char choice;
+    string choice;
 
-    while (1) {
+    while (true) {
         system("cls");
         cout << "\n\t========== BINAYAK'S BANK ==========\n";
         cout << "\t1. Create New Account\n";
@@ -37,18 +44,16 @@ int main() {
         cout << "\t0. Exit\n";
         cout << "\t===================================\n";
         cout << "\tEnter choice: ";
-        cin >> choice;
+        getline(cin, choice);
 
-        switch (choice) {
-        case '1':
+        if (choice == "1") {
             obj.createAccount();
-            break;
-
-        case '2':
+        }
+        else if (choice == "2") {
             cout << "\nEnter Account Number: ";
-            cin >> obj.searchAcc;
+            getline(cin, obj.searchAcc);
 
-            while (1) {
+            while (true) {
                 system("cls");
                 cout << "\n\t------ ACCOUNT MENU ------\n";
                 cout << "\t1. Deposit Amount\n";
@@ -57,36 +62,35 @@ int main() {
                 cout << "\t0. Logout\n";
                 cout << "\t--------------------------\n";
                 cout << "\tEnter choice: ";
-                cin >> choice;
+                getline(cin, choice);
 
-                switch (choice) {
-                case '1': obj.deposit(); break;
-                case '2': obj.withdraw(); break;
-                case '3': obj.checkInfo(); break;
-                case '0': goto mainMenu;
-                default: cout << "Invalid choice!\n";
-                }
-                system("pause");
+                if (choice == "1") obj.deposit();
+                else if (choice == "2") obj.withdraw();
+                else if (choice == "3") obj.checkInfo();
+                else if (choice == "0") break;
+                else cout << "Invalid choice!\n";
+
+                wait();
             }
-
-        case '0':
+        }
+        else if (choice == "0") {
             exit(0);
-
-        default:
+        }
+        else {
             cout << "Invalid choice!\n";
-            system("pause");
+            wait();
         }
     }
-
-mainMenu:
-    return 0;
 }
 
 // ---------- CREATE ACCOUNT ----------
 void Bank::createAccount() {
     system("cls");
     srand(time(0));
-    accNo = rand() % 900000 + 100000;
+
+    accNo = "";
+    for (int i = 0; i < 11; i++)
+        accNo += char('0' + rand() % 10);
 
     cout << "\n------ CREATE NEW ACCOUNT ------\n";
     cout << "Name           : ";
@@ -102,6 +106,8 @@ void Bank::createAccount() {
     cout << "Initial Amount: ";
     cin >> balance;
 
+    cin.ignore(); // clear buffer
+
     file.open("bank.txt", ios::out | ios::app);
     file << accNo << " " << name << " " << fatherName << " "
          << aadhar << " " << phone << " "
@@ -109,14 +115,15 @@ void Bank::createAccount() {
     file.close();
 
     cout << "\nAccount Created Successfully!\n";
-    cout << "Your Account Number is: " << accNo << endl;
-    system("pause");
+    cout << "Your 11-digit Account Number is: " << accNo << endl;
+    wait();
 }
 
 // ---------- DEPOSIT ----------
 void Bank::deposit() {
     cout << "\nEnter amount to deposit: ";
     cin >> amount;
+    cin.ignore();
 
     file.open("bank.txt", ios::in);
     tempFile.open("temp.txt", ios::out);
@@ -141,6 +148,7 @@ void Bank::deposit() {
 void Bank::withdraw() {
     cout << "\nEnter amount to withdraw: ";
     cin >> amount;
+    cin.ignore();
 
     file.open("bank.txt", ios::in);
     tempFile.open("temp.txt", ios::out);
@@ -177,9 +185,9 @@ void Bank::checkInfo() {
             cout << "Name       : " << name << endl;
             cout << "Father     : " << fatherName << endl;
             cout << "Aadhar No  : " << aadhar << endl;
-            cout << "Phone No  : " << phone << endl;
-            cout << "Email     : " << email << endl;
-            cout << "Balance   : " << balance << endl;
+            cout << "Phone No   : " << phone << endl;
+            cout << "Email      : " << email << endl;
+            cout << "Balance    : " << balance << endl;
             cout << "-----------------------------\n";
             found = true;
             break;
